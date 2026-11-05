@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>骑马与砍杀 · 新手安装与排障教程</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23c9a25e' d='M12 2l7 3v6c0 4.5-3 8-7 11-4-3-7-6.5-7-11V5l7-3z'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#171310; --bg2:#201a14; --card:#2a2119; --card2:#322720;
+    --line:#4a3a2b; --line2:#5d4a36;
+    --ink:#ece2d2; --muted:#a89783; --faint:#7c6d5b;
+    --gold:#c9a25e; --gold2:#e6c88c; --red:#c96a5a; --green:#93b17d;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+    line-height:1.75;
+    min-height:100vh;
+  }
+  button,input{font-family:inherit;font-size:inherit}
+  a{color:var(--gold2);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .serif{font-family:"Noto Serif SC","Source Han Serif SC","STSong","SimSun",serif}
+
+  /* ============ 验证门 ============ */
+  #gate{
+    position:fixed;inset:0;z-index:50;
+    display:flex;align-items:center;justify-content:center;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(201,162,94,.14), transparent 60%),
+      linear-gradient(160deg,#171310 0%,#221a13 100%);
+    padding:24px;
+  }
+  .gate-card{
+    width:min(560px,100%);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:40px 34px;
+    box-shadow:var(--shadow);
+  }
+  .gate-crest{
+    width:54px;height:54px;margin:0 auto 18px;
+    border:1px solid var(--gold);border-radius:12px;
+    display:flex;align-items:center;justify-content:center;color:var(--gold2);
+  }
+  .gate-card h1{text-align:center;font-size:24px;letter-spacing:2px;margin-bottom:10px}
+  .gate-card p.lead{text-align:center;color:var(--muted);font-size:14px;margin-bottom:26px}
+  .gate-q{
+    background:var(--bg2);border:1px dashed var(--line2);border-radius:12px;
+    padding:16px 18px;margin-bottom:18px;font-size:15px;
+  }
+  .gate-q b{color:var(--gold2)}
+  .gate-row{display:flex;gap:10px;flex-wrap:wrap}
+  .gate-row input{
+    flex:1;min-width:180px;background:#14100c;border:1px solid var(--line2);
+    color:var(--ink);border-radius:10px;padding:12px 14px;outline:none;
+  }
+  .gate-row input:focus{border-color:var(--gold)}
+  .gate-row button{
+    background:var(--gold);color:#1d1509;border:none;border-radius:10px;
+    padding:12px 22px;font-weight:700;cursor:pointer;
+  }
+  .gate-row button:hover{background:var(--gold2)}
+  .gate-err{color:var(--red);font-size:13px;margin-top:12px;min-height:20px;text-align:center}
+  .gate-hint{margin-top:18px;text-align:center;color:var(--faint);font-size:12px}
+
+  /* ============ 通用布局 ============ */
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  .view{display:none}
+  .view.active{display:block}
+
+  header.topbar{
+    position:sticky;top:0;z-index:20;
+    background:rgba(23,19,16,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar-inner{display:flex;align-items:center;gap:14px;padding:14px 22px;max-width:1120px;margin:0 auto}
+  .topbar .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:1px}
+  .topbar .brand svg{color:var(--gold2)}
+  .topbar .spacer{flex:1}
+  .topbar .meta{color:var(--faint);font-size:12px}
+
+  /* Hero */
+  .hero{padding:52px 0 30px;border-bottom:1px solid var(--line)}
+  .hero .kicker{color:var(--gold);letter-spacing:4px;font-size:13px;margin-bottom:14px}
+  .hero h1{font-size:clamp(28px,4.5vw,42px);line-height:1.3;letter-spacing:1px;margin-bottom:16px}
+  .hero h1 em{font-style:normal;color:var(--gold2)}
+  .hero p.sub{color:var(--muted);max-width:640px;font-size:15px}
+  .hero .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line2);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
+  .chip svg{width:14px;height:14px}
+
+  /* 前言 */
+  .notice{
+    margin:28px 0;background:var(--bg2);border-left:3px solid var(--gold);
+    border-radius:0 12px 12px 0;padding:18px 20px;color:var(--muted);font-size:14px;
+  }
+  .notice summary{cursor:pointer;color:var(--ink);font-weight:700}
+  .notice .notice-body{margin-top:12px;white-space:pre-line}
+
+  /* 区块标题 */
+  .section-head{display:flex;align-items:baseline;gap:14px;margin:38px 0 18px}
+  .section-head h2{font-size:22px;letter-spacing:1px}
+  .section-head span{color:var(--faint);font-size:13px}
+
+  /* 教程卡片 */
+  .grid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .tcard{
+    background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:20px;cursor:pointer;transition:transform .18s ease,border-color .18s ease;
+    display:flex;flex-direction:column;gap:12px;
+  }
+  .tcard:hover{transform:translateY(-3px);border-color:var(--gold)}
+  .tcard .num{color:var(--gold);font-family:"Noto Serif SC",serif;font-size:13px;letter-spacing:2px}
+  .tcard h3{font-size:17px;line-height:1.5}
+  .tcard .desc{color:var(--muted);font-size:13.5px;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .tcard .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:8px;padding:4px 9px}
+  .tag svg{width:13px;height:13px}
+  .tag.video{color:var(--green);border-color:rgba(147,177,125,.4)}
+  .tag.text{color:var(--gold2)}
+
+  /* 补丁卡 */
+  .pgrid{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:820px){.pgrid{grid-template-columns:repeat(3,1fr)}}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px}
+  .pcard .pname{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
+  .pcard .pname svg{color:var(--gold2);width:18px;height:18px}
+  .pcard .pdesc{color:var(--muted);font-size:13.5px;flex:1}
+  .pcard .code{background:var(--bg2);border:1px dashed var(--line2);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
+  .pcard .code b{color:var(--gold2);letter-spacing:1px}
+  .pcard .plink{display:block;text-align:center;background:var(--gold);color:#1d1509;border-radius:10px;padding:11px;font-weight:700}
+  .pcard .plink:hover{background:var(--gold2);text-decoration:none}
+
+  /* ============ 详情页 ============ */
+  .detail-bar{display:flex;align-items:center;gap:12px;padding:22px 0 8px}
+  .back-btn{background:none;border:1px solid var(--line2);color:var(--muted);border-radius:10px;padding:9px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+  .back-btn:hover{color:var(--ink);border-color:var(--gold)}
+  .detail-title{padding:14px 0 8px}
+  .detail-title h1{font-size:clamp(22px,3.5vw,30px);letter-spacing:.5px;margin-bottom:12px}
+  .detail-tags{display:flex;gap:8px;flex-wrap:wrap}
+
+  .block{margin-top:30px}
+  .block-title{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:700;margin-bottom:14px;color:var(--gold2)}
+  .block-title svg{width:18px;height:18px}
+
+  .text-body{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;white-space:pre-line}
+  .text-body p{margin-bottom:10px}
+  .text-body .step-line{color:var(--ink)}
+  .text-body .step-line::before{content:"";}
+  .text-body .quote{background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 16px;margin:10px 0;color:var(--muted)}
+
+  /* 图片画廊 */
+  .gallery{display:flex;flex-direction:column;gap:18px}
+  .gitem{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .gitem .gtop{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line)}
+  .gitem .gtop .badge{background:var(--gold);color:#1d1509;border-radius:8px;font-size:12px;font-weight:700;padding:3px 10px}
+  .gitem .gtop span.gnote{color:var(--faint);font-size:12px}
+  .gitem img{display:block;width:100%;height:auto;cursor:zoom-in}
+  .gitem img:hover{opacity:.96}
+
+  .video-box{background:#0d0a07;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .video-box video{display:block;width:100%;max-height:560px;background:#000}
+  .video-box .vnote{padding:12px 18px;color:var(--faint);font-size:13px}
+
+  .rel-patches{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:760px){.rel-patches{grid-template-columns:repeat(2,1fr)}}
+
+  .detail-nav{display:flex;justify-content:space-between;gap:12px;margin:36px 0 50px}
+  .detail-nav button{flex:1;background:var(--card);border:1px solid var(--line);color:var(--muted);border-radius:12px;padding:14px 16px;cursor:pointer;text-align:left}
+  .detail-nav button.next{text-align:right}
+  .detail-nav button:hover{border-color:var(--gold);color:var(--ink)}
+  .detail-nav button .lbl{font-size:12px;color:var(--faint)}
+  .detail-nav button .ttl{font-size:14px;margin-top:3px}
+
+  /* Lightbox */
+  #lightbox{position:fixed;inset:0;z-index:60;display:none;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+  #lightbox.open{display:flex}
+  #lightbox img{max-width:100%;max-height:92vh;border-radius:8px;box-shadow:var(--shadow)}
+  #lightbox .lb-close{position:absolute;top:18px;right:22px;color:#fff;font-size:28px;cursor:pointer;line-height:1}
+
+  footer.foot{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--faint);font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ===== 验证门 ===== -->
+<section id="gate">
+  <div class="gate-card">
+    <div class="gate-crest" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6">
+        <path d="M12 2l7 3v6c0 4.5-3 8-7 11-4-3-7-6.5-7-11V5l7-3z"/>
+      </svg>
+    </div>
+    <h1 class="serif">教程访问验证</h1>
+    <p class="lead">本套教程仅面向购买 MOD 的买家，完成下面的问题即可进入</p>
+    <div class="gate-q">
+      问题：<b>您购买本 MOD 的咸鱼卖家的名称叫什么？</b>
+    </div>
+    <div class="gate-row">
+      <input id="gate-input" type="text" autocomplete="off" placeholder="请输入卖家名称" aria-label="卖家名称">
+      <button id="gate-btn" type="button">进入教程</button>
+    </div>
+    <div class="gate-err" id="gate-err"></div>
+    <div class="gate-hint">答案为卖家店铺名称，输入后点击进入</div>
+  </div>
+</section>
+
+<!-- ===== 首页 ===== -->
+<section id="home" class="view">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l7 3v6c0 4.5-3 8-7 11-4-3-7-6.5-7-11V5l7-3z"/></svg>
+        骑砍新手教程
+      </div>
+      <div class="spacer"></div>
+      <div class="meta">骑砍大师（原暗子默）编写</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="hero">
+      <div class="kicker">MOUNT &amp; BLADE: WARBAND</div>
+      <h1 class="serif">骑马与砍杀 · <em>新手安装与排障教程</em></h1>
+      <p class="sub">从下载解压、启动游戏、切换中文，到常见报错与性能优化，按下面的问题目录逐项查看。每个问题配有文字说明、步骤截图，部分问题附带操作视频。</p>
+      <div class="chips" id="hero-chips"></div>
+    </div>
+
+    <details class="notice" id="notice-box">
+      <summary>编者前言（点击展开）</summary>
+      <div class="notice-body" id="notice-body"></div>
+    </details>
+
+    <div class="section-head">
+      <h2 class="serif">问题目录</h2>
+      <span id="dir-count"></span>
+    </div>
+    <div class="grid" id="card-grid"></div>
+
+    <div class="section-head">
+      <h2 class="serif">配套补丁下载</h2>
+      <span>点击链接跳转网盘，提取码见卡片</span>
+    </div>
+    <div class="pgrid" id="patch-grid"></div>
+  </div>
+
+  <footer class="foot">
+    本套教程仅针对购买商品的买家 · 教程内容整理自随附素材 · 如仍有疑难可联系卖家咨询
+  </footer>
+</section>
+
+<!-- ===== 详情页 ===== -->
+<section id="detail" class="view">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l7 3v6c0 4.5-3 8-7 11-4-3-7-6.5-7-11V5l7-3z"/></svg>
+        骑砍新手教程
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="detail-bar">
+      <button class="back-btn" id="back-btn" type="button">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        返回问题目录
+      </button>
+    </div>
+    <div class="detail-title">
+      <h1 class="serif" id="d-title"></h1>
+      <div class="detail-tags" id="d-tags"></div>
+    </div>
+
+    <div class="block" id="d-text-block">
+      <div class="block-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+        文字说明
+      </div>
+      <div class="text-body" id="d-text"></div>
+    </div>
+
+    <div class="block" id="d-docs-block">
+      <div class="block-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>
+        补充文档
+      </div>
+      <div class="rel-patches" id="d-docs"></div>
+    </div>
+
+    <div class="block" id="d-img-block">
+      <div class="block-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>
+        步骤截图
+      </div>
+      <div class="gallery" id="d-gallery"></div>
+    </div>
+
+    <div class="block" id="d-video-block">
+      <div class="block-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
+        操作视频
+      </div>
+      <div class="video-box">
+        <video id="d-video" controls preload="metadata"></video>
+        <div class="vnote">如视频无法加载，请确认教程文件夹中的 assets 目录与本页面放在同一级目录下。</div>
+      </div>
+    </div>
+
+    <div class="block" id="d-patch-block">
+      <div class="block-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>
+        配套补丁
+      </div>
+      <div class="rel-patches" id="d-patches"></div>
+    </div>
+
+    <div class="detail-nav">
+      <button id="prev-btn" type="button">
+        <div class="lbl">上一篇</div>
+        <div class="ttl" id="prev-ttl"></div>
+      </button>
+      <button id="next-btn" class="next" type="button">
+        <div class="lbl">下一篇</div>
+        <div class="ttl" id="next-ttl"></div>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Lightbox ===== -->
+<div id="lightbox">
+  <span class="lb-close" id="lb-close" aria-hidden="true">×</span>
+  <img id="lb-img" src="" alt="放大查看步骤截图">
+</div>
+
+<script>
+const RAW = {
+  "tutorials": [
+    {
+      "slug": "startup",
+      "title": "下载后如何启动游戏",
+      "text": "咸鱼暗子默创作：\n第一步，在咸鱼发货后，会发送一串链接与提取码，这时候只需要复制链接，然后再网页上【搜索或输入Web地址】上粘贴链接，\n如需提取码，默认为zimo。（意为暗子默中的 “子”zi  “默”mo）。\n第二步，输入了提取码后，进入“天空游戏城”分享的文件，在文件窗口右上方点击下载，即可跳转百度网盘客户端下载。\n第三步，下载完后，打开文件，将其解压在自己能找到的文件地址。然后找到这个文件夹。\n第四步，打开这个文件夹，向下划动，选中mb_warband这个exe文件，双击以后就可以玩了。\n（如果是英文版可以看如何改成中文教程）\n暗子默 编写~",
+      "images": [
+        "assets/img/startup/step1.png",
+        "assets/img/startup/step2.png",
+        "assets/img/startup/step3.png",
+        "assets/img/startup/step4.png",
+        "assets/img/startup/step5.png",
+        "assets/img/startup/step6.png",
+        "assets/img/startup/step7.png",
+        "assets/img/startup/step8.png",
+        "assets/img/startup/step9.png",
+        "assets/img/startup/step10.png",
+        "assets/img/startup/step11.png"
+      ],
+      "video": "assets/video-web/startup.mp4",
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "chinese",
+      "title": "如何修改成中文",
+      "text": "无双三国暂时无法外部修改英文，游戏内部是中文的\n暗子默：由于本教程只需要几步，所以不录视频不加水印。\n打开mb_warband这个exe程序文件，然后选中第二个选项：configure，\n然后在Language后面的一栏里，将English改成Chinese（simplified）即可，最后点击OK。",
+      "images": [
+        "assets/img/chinese/step1.png",
+        "assets/img/chinese/step2.png",
+        "assets/img/chinese/step3.png",
+        "assets/img/chinese/step4.png",
+        "assets/img/chinese/step5.png"
+      ],
+      "video": null,
+      "docs": [
+        "assets/docs/chinese.docx"
+      ],
+      "hasText": true
+    },
+    {
+      "slug": "desktop",
+      "title": "如何将软件发送到桌面",
+      "text": "暗子默：由于本教程过于简单，所以不加水印不录视频。\n打开骑砍文件夹，找到mb_warband这个exe文件，右键然后选择创建快捷方式，\n然后在mb_warband下面会出现一个快捷方式的图标，将其移动到桌面即可。",
+      "images": [
+        "assets/img/desktop/step1.png",
+        "assets/img/desktop/step2.png",
+        "assets/img/desktop/step3.png",
+        "assets/img/desktop/step4.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "merge",
+      "title": "将mod文件与原版合成的方法",
+      "text": "",
+      "images": [
+        "assets/img/merge/step1.png",
+        "assets/img/merge/step2.png",
+        "assets/img/merge/step3.png",
+        "assets/img/merge/step4.png",
+        "assets/img/merge/step5.png",
+        "assets/img/merge/step6.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": false
+    },
+    {
+      "slug": "serial",
+      "title": "部分骑砍版本如何输入序列码",
+      "text": "暗子默：由于界面变化不大，且操作简单，本次教程不使用视频与水印。\n首先，打开骑砍文件夹，找到mount&blade-uniloader，！！！！不是mount&blade！！！!后面有uniloader。\n打开后，（由于魔改了文字，所以开始界面的字体会乱码，但游戏内的游戏文字正常）会弹出一个界面，你选择第二个选项，\n再打开中间最下面的方框，到时候会再次弹出一个窗口，你在其中全部输入A，最后点击右下方，偏左的方框即可。\n【可能】会出现下面问题：\n输完序列码后又弹出需要你输入序列码的方框？\n解决方法：1.忽略，只要输入过一次那就永久使用；\n2.右键mount&blade-uniloader，选择属性，再选择兼容性，打开以兼容模式运行这个程序，\n下方选择为Windows7或8，最后点确定。\n然后重新运转，就可以了。",
+      "images": [
+        "assets/img/serial/step1.png",
+        "assets/img/serial/step2.png",
+        "assets/img/serial/step3.png",
+        "assets/img/serial/step4.png",
+        "assets/img/serial/step5.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "rgl",
+      "title": "弹出RGL ERROR错误怎么办",
+      "text": "当运行游戏时出现RGL ERROR 窗口，显示：Failed to assemble shader faceshader_ps from file 时，按以下操作即可。\n首先，打开游戏exe文件，选择配置（界面第二个），将渲染方式改成DirectX 7,把 使用像素着色引擎 前面的勾勾去掉，完成后即可修复。",
+      "images": [
+        "assets/img/rgl/step1.png",
+        "assets/img/rgl/step2.png",
+        "assets/img/rgl/step3.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "d3dx9",
+      "title": "（最新方法）缺少d3dx9_42和xinput1等文件",
+      "text": "首先在补丁赠送中下载最新版修复软件：(最新版）DirectX Repair修复工具v4.1增强版.exe。然后安装解压，选中文件夹，双击DirectX Repair.exe文件，而后选择检测并修复。最后等待即可。",
+      "images": [
+        "assets/img/d3dx9/step1.png",
+        "assets/img/d3dx9/step2.png",
+        "assets/img/d3dx9/step3.png",
+        "assets/img/d3dx9/step4.png",
+        "assets/img/d3dx9/step5.png",
+        "assets/img/d3dx9/step6.png"
+      ],
+      "video": "assets/video-web/d3dx9.mp4",
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "memory",
+      "title": "如何使用内存释放器",
+      "text": "暗子默：内存释放器，网传相当给力，但是我的电脑是16G内存，\n对内存释放器的要求不大，对这个不太了解，不过加速肯定可以的。\n原理：释放其他软件内存，为骑砍提供更强大的内存支持，对于专心玩骑砍的玩家非常友好的。\n按一下步骤即可使用：\n第一步，打开补丁赠送中的内存释放器这个exe文件，弹出窗口中，先点击优化规则。\n第二步，再优化规则中将  【mb_warband.exe】（不要带进中括号）将中括号内的文字粘贴一下。\n先将蓝条中的内容清除，再粘贴进入上方框框。\n第三步，完成后，点击添加即可再右方方框里出现这个文件名，在点击保存规则方便下次使用。\n第四步，回到基本设置中，设置时间按下面规则设置：\n{\n玩骑砍时非常卡顿，建议隔5分钟释放一次（如果依旧卡的不行可以将时长往前提）。\n玩骑砍时偶尔卡顿，建议隔10分钟释放一次（偶尔是指差不多十分钟卡顿一次）\n玩骑砍时每个三十分钟卡顿一次，建议隔20分钟释放一次。\n玩骑砍时压根不卡，忽略这个应用，你的电脑不适合这个软件。\n}\n第五步，点击保存设置方便下次使用，然后点击立即释放就可以开始玩骑砍啦！",
+      "images": [
+        "assets/img/memory/step1.png",
+        "assets/img/memory/step2.png",
+        "assets/img/memory/step3.png",
+        "assets/img/memory/step4.png",
+        "assets/img/memory/step5.png",
+        "assets/img/memory/step6.png"
+      ],
+      "video": "assets/video-web/memory.mp4",
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "battlesizer",
+      "title": "赠送的千人战场修改器怎么用",
+      "text": "暗子默：由于暗子默商店里每个商品都自带人数修改器，如果你想要添加到你自己本来就含有的mod里，可以借鉴本套教程。\n操作步骤：\n首先，打开本文件中的赠送补丁文件夹，找到千人战场修改器文件夹并打开，复制BattleSizer这个exe程序文件，\n然后打开你需要使用的骑砍文件夹（一般暗子默商店都会自带千人战场修改器）。\n然后将该exe文件粘贴在骑砍文件夹中（如果不了解具体位置在哪里，可看【图片】教程）。\n其次，打开BattleSizer这个exe程序文件，会弹出一个窗口。\n拖动上矩形下三角的图像可修改人数，修改完成后点击Save and Exit，\n最后会弹出一个修改成功的英文界面，点击确定后修改完成。\n尾言：由于咸鱼暗子默商店出售的商品都会自带千人战场修改器，几乎不需要教程，所以不录制视频，以免加大储存空间。",
+      "images": [
+        "assets/img/battlesizer/step1.png",
+        "assets/img/battlesizer/step2.png",
+        "assets/img/battlesizer/step3.png",
+        "assets/img/battlesizer/step4.png",
+        "assets/img/battlesizer/step5.png",
+        "assets/img/battlesizer/step6.png",
+        "assets/img/battlesizer/step7.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    }
+  ],
+  "patches": {
+    "directx": {
+      "name": "DirectX 修复工具",
+      "url": "https://caiyun.139.com/w/i/2yA8Bb1HV5u1f",
+      "code": "6pmv",
+      "rel": [
+        "d3dx9",
+        "rgl"
+      ],
+      "desc": "修复缺少 d3dx9_42、xinput1 等运行库文件的问题"
+    },
+    "battlesizer": {
+      "name": "千人战场修改器",
+      "url": "https://caiyun.139.com/w/i/2yA8AW0AGqqgt",
+      "code": "4j5r",
+      "rel": [
+        "battlesizer"
+      ],
+      "desc": "修改战场人数上限，支持千人同屏"
+    },
+    "memory": {
+      "name": "内存释放器",
+      "url": "https://caiyun.139.com/w/i/2yA8Bb1HV6Lbb",
+      "code": "f8yk",
+      "rel": [
+        "memory"
+      ],
+      "desc": "释放其他软件占用的内存，为骑砍预留更大运行空间"
+    }
+  },
+  "notice": "咸鱼 暗子默：\n#前言：本套教程只针对安装与使用游戏本身，不包含游戏内部的攻略，具体攻略可以百度搜索，这里就不重复收集这些信息了。\n本套教程采取三位一体方法，三位指文本、图片、视频三方位共同解决同一问题(过于简单的教程就不会录制视频喔），\n一体指如果本套教程无法解决的问题可以询问咸鱼暗子默。\n本次解决问题的方法大多数来源于网络教程，部分我已亲自实践并验证其可行性。\n本套教程仅针对咸鱼 暗子默 的买家，不对外发放！！！！\n本套教程能解决大多数不知如何安装的新手玩家或者安装出错的老玩家的大部分问题。\n无价之宝（购买暗子默商品时可获得） 本套规则，永世不变！！！\n如您有问题无法解决，或者疑难问题想要询问，可以在咸鱼商品与我私聊。\n*修订于2022年8月3日*"
+};
+/* ============ 工具 ============ */
+const $ = id => document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+/* ============ 验证门 ============ */
+const ANSWER = "骑砍大师";
+function passed(){return sessionStorage.getItem("mb_pass")==="1";}
+function checkGate(){
+  const v = $("gate-input").value.trim().replace(/\s+/g,"");
+  if(v===ANSWER){
+    sessionStorage.setItem("mb_pass","1");
+    $("gate-err").textContent="";
+    enterApp();
+  }else{
+    $("gate-err").textContent="回答不正确，请核对卖家名称后重试";
+    $("gate-input").focus();
+  }
+}
+$("gate-btn").addEventListener("click",checkGate);
+$("gate-input").addEventListener("keydown",e=>{if(e.key==="Enter")checkGate();});
+
+/* ============ 路由 ============ */
+function show(name){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  $(name).classList.add("active");
+  window.scrollTo(0,0);
+}
+function goHome(){renderHome();show("home");}
+function goDetail(slug){renderDetail(slug);show("detail");}
+function enterApp(){route();}
+function route(){
+  const gate=$("gate");
+  if(!passed()){
+    gate.style.display="flex";
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    return;
+  }
+  gate.style.display="none";
+  const h=location.hash;
+  if(h.startsWith("#/t/")){goDetail(h.slice(5));}
+  else{goHome();}
+}
+window.addEventListener("hashchange",route);
+
+/* ============ 图标 ============ */
+const ICON_TEXT='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>';
+const ICON_IMG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/></svg>';
+const ICON_VIDEO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>';
+
+/* ============ 首页 ============ */
+function patchBySlug(slug){
+  return Object.values(RAW.patches).filter(p=>p.rel.includes(slug));
+}
+function firstSentence(text){
+  if(!text)return "本教程以步骤截图为准，按顺序查看图片即可完成操作。";
+  const line=text.split("\n").find(l=>l.trim());
+  return line&&line.length>46?line.slice(0,46)+"…":line;
+}
+
+function renderHome(){
+  const list=RAW.tutorials;
+  $("dir-count").textContent=`共 ${list.length} 个问题`;
+  $("notice-body").textContent=RAW.notice;
+
+  const videoCount=list.filter(t=>t.video).length;
+  $("hero-chips").innerHTML=
+    `<span class="chip">${ICON_TEXT}文字说明</span>`+
+    `<span class="chip">${ICON_IMG}步骤截图 ${list.reduce((n,t)=>n+t.images.length,0)} 张</span>`+
+    `<span class="chip">${ICON_VIDEO}操作视频 ${videoCount} 段</span>`;
+
+  $("card-grid").innerHTML=list.map((t,i)=>{
+    const tags=[];
+    if(t.hasText)tags.push(`<span class="tag text">${ICON_TEXT}文字</span>`);
+    tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张图</span>`);
+    if(t.video)tags.push(`<span class="tag video">${ICON_VIDEO}视频</span>`);
+    return `<article class="tcard" data-slug="${t.slug}">
+      <div class="num">${String(i+1).padStart(2,"0")}</div>
+      <h3>${esc(t.title)}</h3>
+      <div class="desc">${esc(firstSentence(t.text))}</div>
+      <div class="tags">${tags.join("")}</div>
+    </article>`;
+  }).join("");
+
+  document.querySelectorAll(".tcard").forEach(c=>{
+    c.addEventListener("click",()=>{goDetail(c.dataset.slug);});
+  });
+
+  $("patch-grid").innerHTML=Object.values(RAW.patches).map(p=>`
+    <div class="pcard">
+      <div class="pname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>${esc(p.name)}</div>
+      <div class="pdesc">${esc(p.desc)}</div>
+      <div class="code">提取码：<b>${esc(p.code)}</b></div>
+      <a class="plink" href="${esc(p.url)}" target="_blank" rel="noopener">打开网盘链接</a>
+    </div>`).join("");
+}
+
+/* ============ 详情页 ============ */
+function renderDetail(slug){
+  const idx=RAW.tutorials.findIndex(t=>t.slug===slug);
+  if(idx<0){goHome();return;}
+  const t=RAW.tutorials[idx];
+
+  $("d-title").textContent=t.title;
+  const tags=[];
+  if(t.hasText)tags.push(`<span class="tag text">${ICON_TEXT}文字说明</span>`);
+  tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张截图</span>`);
+  if(t.video)tags.push(`<span class="tag video">${ICON_VIDEO}操作视频</span>`);
+  $("d-tags").innerHTML=tags.join("");
+
+  // 文字
+  $("d-text-block").style.display=t.hasText?"":"none";
+  if(t.hasText){
+    const lines=t.text.split("\n").map(l=>l.trim()).filter(Boolean);
+    let inQuote=false,quote=[];
+    const html=[];
+    const flush=()=>{if(quote.length){html.push(`<div class="quote">${esc(quote.join("\n"))}</div>`);quote=[];}};
+    lines.forEach(l=>{
+      if(l==="{"){inQuote=true;return;}
+      if(l==="}"){inQuote=false;flush();return;}
+      if(inQuote){quote.push(l);return;}
+      const isStep=/^第[一二三四五六七八九十\d]+步/.test(l);
+      html.push(`<p class="${isStep?"step-line":""}">${esc(l)}</p>`);
+    });
+    flush();
+    $("d-text").innerHTML=html.join("");
+  }
+
+  // 补充文档
+  const docs=t.docs||[];
+  $("d-docs-block").style.display=docs.length?"":"none";
+  $("d-docs").innerHTML=docs.map(d=>`
+    <div class="pcard">
+      <div class="pname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2V9l-6-6z"/><path d="M14 3v6h6"/></svg>补充说明文档（Word）</div>
+      <div class="pdesc">与本问题相关的补充说明，可下载后用 Word 打开查看。</div>
+      <a class="plink" href="${esc(d)}" download>下载文档</a>
+    </div>`).join("");
+
+  // 图片
+  $("d-img-block").style.display=t.images.length?"":"none";
+  $("d-gallery").innerHTML=t.images.map((src,i)=>`
+    <div class="gitem">
+      <div class="gtop"><span class="badge">第 ${i+1} 步</span><span class="gnote">点击图片可放大查看</span></div>
+      <img src="${esc(src)}" alt="${esc(t.title)} 第${i+1}步" data-full="${esc(src)}">
+    </div>`).join("");
+  document.querySelectorAll("#d-gallery img").forEach(img=>{
+    img.addEventListener("click",()=>{
+      $("lb-img").src=img.dataset.full;
+      $("lightbox").classList.add("open");
+    });
+  });
+
+  // 视频
+  $("d-video-block").style.display=t.video?"":"none";
+  if(t.video){const v=$("d-video");v.src=t.video;v.load();}
+
+  // 关联补丁
+  const rel=patchBySlug(t.slug);
+  $("d-patch-block").style.display=rel.length?"":"none";
+  $("d-patches").innerHTML=rel.map(p=>`
+    <div class="pcard">
+      <div class="pname"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a9 9 0 11-3-6.7"/><path d="M21 3v6h-6"/></svg>${esc(p.name)}</div>
+      <div class="pdesc">${esc(p.desc)}</div>
+      <div class="code">提取码：<b>${esc(p.code)}</b></div>
+      <a class="plink" href="${esc(p.url)}" target="_blank" rel="noopener">打开网盘链接</a>
+    </div>`).join("");
+
+  // 上下篇
+  const prev=RAW.tutorials[idx-1],next=RAW.tutorials[idx+1];
+  const prevBtn=$("prev-btn"),nextBtn=$("next-btn");
+  prevBtn.style.visibility=prev?"":"hidden";
+  nextBtn.style.visibility=next?"":"hidden";
+  $("prev-ttl").textContent=prev?prev.title:"—";
+  $("next-ttl").textContent=next?next.title:"—";
+  prevBtn.onclick=()=>{if(prev)goDetail(prev.slug);};
+  nextBtn.onclick=()=>{if(next)goDetail(next.slug);};
+}
+
+$("back-btn").addEventListener("click",goHome);
+$("lb-close").addEventListener("click",()=>$("lightbox").classList.remove("open"));
+$("lightbox").addEventListener("click",e=>{if(e.target.id==="lightbox")$("lightbox").classList.remove("open");});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lightbox").classList.remove("open");});
+
+/* ============ 启动 ============ */
+route();
+</script>
+<div id="asset-pool" style="display:none"><img src="assets/img/startup/step1.png" alt="" aria-hidden="true"><img src="assets/img/startup/step2.png" alt="" aria-hidden="true"><img src="assets/img/startup/step3.png" alt="" aria-hidden="true"><img src="assets/img/startup/step4.png" alt="" aria-hidden="true"><img src="assets/img/startup/step5.png" alt="" aria-hidden="true"><img src="assets/img/startup/step6.png" alt="" aria-hidden="true"><img src="assets/img/startup/step7.png" alt="" aria-hidden="true"><img src="assets/img/startup/step8.png" alt="" aria-hidden="true"><img src="assets/img/startup/step9.png" alt="" aria-hidden="true"><img src="assets/img/startup/step10.png" alt="" aria-hidden="true"><img src="assets/img/startup/step11.png" alt="" aria-hidden="true"><video src="assets/video-web/startup.mp4" aria-hidden="true"></video><img src="assets/img/chinese/step1.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step2.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step3.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step4.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step5.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step1.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step2.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step3.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step1.png" alt="" aria-hidden="true"><img src="assets/img/merge/step2.png" alt="" aria-hidden="true"><img src="assets/img/merge/step3.png" alt="" aria-hidden="true"><img src="assets/img/merge/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step5.png" alt="" aria-hidden="true"><img src="assets/img/merge/step6.png" alt="" aria-hidden="true"><img src="assets/img/serial/step1.png" alt="" aria-hidden="true"><img src="assets/img/serial/step2.png" alt="" aria-hidden="true"><img src="assets/img/serial/step3.png" alt="" aria-hidden="true"><img src="assets/img/serial/step4.png" alt="" aria-hidden="true"><img src="assets/img/serial/step5.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step1.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step2.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step1.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step2.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step4.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step5.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step6.png" alt="" aria-hidden="true"><video src="assets/video-web/d3dx9.mp4" aria-hidden="true"></video><img src="assets/img/memory/step1.png" alt="" aria-hidden="true"><img src="assets/img/memory/step2.png" alt="" aria-hidden="true"><img src="assets/img/memory/step3.png" alt="" aria-hidden="true"><img src="assets/img/memory/step4.png" alt="" aria-hidden="true"><img src="assets/img/memory/step5.png" alt="" aria-hidden="true"><img src="assets/img/memory/step6.png" alt="" aria-hidden="true"><video src="assets/video-web/memory.mp4" aria-hidden="true"></video><img src="assets/img/battlesizer/step1.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step2.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step3.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step4.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step5.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step6.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step7.png" alt="" aria-hidden="true"></div>
+</body>
+</html>
