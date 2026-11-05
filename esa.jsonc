@@ -1,0 +1,9 @@
+{
+  "build": {
+    "command": "mkdir -p dist && cp -r index.html assets dist/",
+    "outputDir": "dist"
+  },
+  "pages": {
+    "enable": true
+  }
+}
