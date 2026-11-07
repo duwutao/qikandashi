@@ -126,19 +126,21 @@
   .tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:8px;padding:4px 9px}
   .tag svg{width:13px;height:13px}
   .tag.text{color:var(--gold2)}
-  .tag.pending{color:var(--gold)}border-style:dashed}
+  .tag.pending{color:var(--gold);border-style:dashed}
 
   /* 搜索框 */
-  .search-row{display:flex;align-items:center;gap:13px;max-width:680px;margin:0 auto 24px;background:var(--bg2);border:1.5px solid var(--line2);border-radius:16px;padding:16px 22px;transition:border-color .18s ease,box-shadow .18s ease}
+  .search-row{display:flex;align-items:center;gap:14px;max-width:680px;margin:24px auto 36px;background:var(--bg2);border:1.5px solid var(--line2);border-radius:16px;padding:30px 24px;transition:border-color .18s ease,box-shadow .18s ease}
   .search-row:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(198,158,92,.18)}
-  .search-row svg{width:22px;height:22px;color:var(--gold2);flex:none}
-  .search-row input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font-size:16px;padding:4px 0}
-  .search-row input::placeholder{color:var(--faint);font-size:15px}
+  .search-row svg{width:26px;height:26px;color:var(--gold2);flex:none}
+  .search-row input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font-size:18px;padding:6px 0;line-height:1.5}
+  .search-row input::placeholder{color:var(--faint);font-size:16px}
   .empty-tip{margin-top:18px;text-align:center;color:var(--muted);font-size:14px;padding:26px 0}
 
   /* 待补图提示 */
   .pending-note{margin-top:16px;background:var(--bg2);border:1px dashed var(--gold);border-radius:12px;padding:13px 16px;color:var(--muted);font-size:13.5px;line-height:1.7}
   .pending-note b{color:var(--gold2)}
+  .warn-note{margin:12px 0;background:rgba(201,106,90,.13);border:1.5px solid var(--red);border-radius:12px;padding:14px 16px;color:var(--ink);font-size:14.5px;line-height:1.7}
+  .warn-note b{color:var(--red);letter-spacing:.5px}
 
   /* 补丁卡 */
   .pgrid{display:grid;grid-template-columns:1fr;gap:16px}
@@ -570,7 +572,7 @@ const RAW = {
       "slug": "import-export",
       "title": "导入导出大法（修改角色属性）",
       "summary": "通过导出角色、修改角色文档数值、再导入角色来调整属性、技能与武器熟练度。",
-      "text": "导入导出法：先导出角色，在角色文档里修改数值，再导入角色，即可调整属性与技能。\n第一步，进入大地图 → 主角面板（角色）→ 统计 → 导出玩家角色；提示成功导出后退出到桌面。\n第二步，找到角色文档所在的 CharExport 文件夹：无双三国、订婚舞会等老版本，CharExport 生成在游戏目录中；战团骑砍的文件位置一般在 我的文档 \\ Mount&Blade Warband \\ CharExport。\n第三步，在 CharExport 中打开与你游戏名对应的 txt 文档。\n角色文档字段对照表（对照下表修改对应数值即可）：\nname = 人物名称\nxp = 当前经验值\nmoney = 当前持有金币数量\nattribute_points = 未分配的属性点\nskill_points = 未分配的技能点\nweapon_points = 未分配的武器点\nstrength = 力量\nagility = 敏捷\nintelligence = 智力\ncharisma = 魅力\ntrade = 交易\nleadership = 统御\nprisoner_management = 俘虏\nfirst_aid = 治疗\nsurgery = 手术\nwound_treatment = 急救\ninventory_management = 物品管理\nspotting = 视野\npathfinding = 向导\ntactics = 战术\ntracking = 跟踪\ntrainer = 教练\nhorse_archery = 骑射\nriding = 骑术\nathletics = 跑动\nshield = 盾防\nweapon_master = 武器熟练\npower_draw = 强弓\npower_throw = 强掷\npower_strike = 强击\nironflesh = 铁骨\none_handed_weapons = 单手武器熟练\ntwo_handed_weapons = 双手武器熟练\npolearms = 长柄武器熟练\narchery = 弓箭熟练\ncrossbows = 十字弩熟练\nthrowing = 投掷武器熟练\nfirearms = 火器熟练\n第四步，对照上表修改文档中的对应数值并保存。\n第五步，回到游戏 → 主角面板 → 统计 → 导入玩家角色，确认导入即可成功。",
+      "text": "导入导出法：先导出角色，在角色文档里修改数值，再导入角色，即可调整属性与技能。\n!重要提示：导出前请先把角色（游戏）名字改成英文，中文名无法正常导出。\n第一步，进入大地图 → 主角面板（角色）→ 统计 → 导出玩家角色；提示成功导出后退出到桌面。\n第二步，找到角色文档所在的 CharExport 文件夹：无双三国、订婚舞会等老版本，CharExport 生成在游戏目录中；战团骑砍的文件位置一般在 我的文档 \\ Mount&Blade Warband \\ CharExport。\n第三步，在 CharExport 中打开与你游戏名对应的 txt 文档。\n角色文档字段对照表（对照下表修改对应数值即可）：\nname = 人物名称\nxp = 当前经验值\nmoney = 当前持有金币数量\nattribute_points = 未分配的属性点\nskill_points = 未分配的技能点\nweapon_points = 未分配的武器点\nstrength = 力量\nagility = 敏捷\nintelligence = 智力\ncharisma = 魅力\ntrade = 交易\nleadership = 统御\nprisoner_management = 俘虏\nfirst_aid = 治疗\nsurgery = 手术\nwound_treatment = 急救\ninventory_management = 物品管理\nspotting = 视野\npathfinding = 向导\ntactics = 战术\ntracking = 跟踪\ntrainer = 教练\nhorse_archery = 骑射\nriding = 骑术\nathletics = 跑动\nshield = 盾防\nweapon_master = 武器熟练\npower_draw = 强弓\npower_throw = 强掷\npower_strike = 强击\nironflesh = 铁骨\none_handed_weapons = 单手武器熟练\ntwo_handed_weapons = 双手武器熟练\npolearms = 长柄武器熟练\narchery = 弓箭熟练\ncrossbows = 十字弩熟练\nthrowing = 投掷武器熟练\nfirearms = 火器熟练\n第四步，对照上表修改文档中的对应数值并保存。\n第五步，回到游戏 → 主角面板 → 统计 → 导入玩家角色，确认导入即可成功。",
       "images": [
         "assets/img/import-export/step1.png",
         "assets/img/import-export/step2.png",
@@ -627,11 +629,11 @@ function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",
 
 /* ============ 验证门 ============ */
 const ANSWER = "骑砍大师";
-function passed(){return sessionStorage.getItem("mb_pass")==="1";}
+function passed(){return localStorage.getItem("mb_pass")==="1";}
 function checkGate(){
   const v = $("gate-input").value.trim().replace(/\s+/g,"");
   if(v===ANSWER){
-    sessionStorage.setItem("mb_pass","1");
+    localStorage.setItem("mb_pass","1");
     $("gate-err").textContent="";
     enterApp();
   }else{
@@ -702,7 +704,7 @@ function renderCards(){
       <div class="tags">${tags.join("")}</div>
     </article>`;
   }).join("");
-  $("empty-tip").style.display=filtered.length?"":"block";
+  $("empty-tip").style.display=filtered.length?"none":"block";
   document.querySelectorAll(".tcard").forEach(c=>{
     c.addEventListener("click",()=>{goDetail(c.dataset.slug);});
   });
@@ -754,6 +756,13 @@ function renderDetail(slug){
       if(l==="{"){inQuote=true;return;}
       if(l==="}"){inQuote=false;flush();return;}
       if(inQuote){quote.push(l);return;}
+      if(l.startsWith("!")){
+        const body=l.slice(1).trim();
+        const ci=body.indexOf("：");
+        if(ci>0){html.push(`<div class="warn-note"><b>${esc(body.slice(0,ci+1))}</b>${esc(body.slice(ci+1))}</div>`);}
+        else{html.push(`<div class="warn-note">${esc(body)}</div>`);}
+        return;
+      }
       const isStep=/^第[一二三四五六七八九十\d]+步/.test(l);
       html.push(`<p class="${isStep?"step-line":""}">${esc(l)}</p>`);
     });
