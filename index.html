@@ -126,6 +126,19 @@
   .tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);border:1px solid var(--line2);border-radius:8px;padding:4px 9px}
   .tag svg{width:13px;height:13px}
   .tag.text{color:var(--gold2)}
+  .tag.pending{color:var(--gold)}border-style:dashed}
+
+  /* 搜索框 */
+  .search-row{display:flex;align-items:center;gap:13px;max-width:680px;margin:0 auto 24px;background:var(--bg2);border:1.5px solid var(--line2);border-radius:16px;padding:16px 22px;transition:border-color .18s ease,box-shadow .18s ease}
+  .search-row:focus-within{border-color:var(--gold);box-shadow:0 0 0 3px rgba(198,158,92,.18)}
+  .search-row svg{width:22px;height:22px;color:var(--gold2);flex:none}
+  .search-row input{flex:1;min-width:0;background:transparent;border:none;outline:none;color:var(--ink);font-size:16px;padding:4px 0}
+  .search-row input::placeholder{color:var(--faint);font-size:15px}
+  .empty-tip{margin-top:18px;text-align:center;color:var(--muted);font-size:14px;padding:26px 0}
+
+  /* 待补图提示 */
+  .pending-note{margin-top:16px;background:var(--bg2);border:1px dashed var(--gold);border-radius:12px;padding:13px 16px;color:var(--muted);font-size:13.5px;line-height:1.7}
+  .pending-note b{color:var(--gold2)}
 
   /* 补丁卡 */
   .pgrid{display:grid;grid-template-columns:1fr;gap:16px}
@@ -239,7 +252,12 @@
       <h2 class="serif">问题目录</h2>
       <span id="dir-count"></span>
     </div>
+    <div class="search-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search-input" type="text" placeholder="搜索问题标题、简介或正文内容，例如：激活、作弊、内存、缺少文件…" autocomplete="off">
+    </div>
     <div class="grid" id="card-grid"></div>
+    <div class="empty-tip" id="empty-tip" style="display:none">没有找到匹配的教程，换个关键词试试。</div>
 
     <div class="section-head">
       <h2 class="serif">配套补丁下载</h2>
@@ -332,6 +350,7 @@ const RAW = {
     {
       "slug": "startup",
       "title": "下载后如何启动游戏",
+      "summary": "下载发货链接后，如何解压文件并找到正确的启动程序进入游戏。",
       "text": "咸鱼暗子默创作：\n第一步，在咸鱼发货后，会发送一串链接与提取码，这时候只需要复制链接，然后再网页上【搜索或输入Web地址】上粘贴链接，\n如需提取码，默认为zimo。（意为暗子默中的 “子”zi  “默”mo）。\n第二步，输入了提取码后，进入“天空游戏城”分享的文件，在文件窗口右上方点击下载，即可跳转百度网盘客户端下载。\n第三步，下载完后，打开文件，将其解压在自己能找到的文件地址。然后找到这个文件夹。\n第四步，打开这个文件夹，向下划动，选中mb_warband这个exe文件，双击以后就可以玩了。\n（如果是英文版可以看如何改成中文教程）\n暗子默 编写~",
       "images": [
         "assets/img/startup/step1.png",
@@ -353,6 +372,7 @@ const RAW = {
     {
       "slug": "chinese",
       "title": "如何修改成中文",
+      "summary": "游戏界面显示英文时，在配置里把语言切换为简体中文。",
       "text": "无双三国暂时无法外部修改英文，游戏内部是中文的\n暗子默：由于本教程只需要几步，所以不加水印。\n打开mb_warband这个exe程序文件，然后选中第二个选项：configure，\n然后在Language后面的一栏里，将English改成Chinese（simplified）即可，最后点击OK。",
       "images": [
         "assets/img/chinese/step1.png",
@@ -370,6 +390,7 @@ const RAW = {
     {
       "slug": "desktop",
       "title": "如何将软件发送到桌面",
+      "summary": "为游戏程序创建快捷方式并发送到桌面，方便以后直接打开。",
       "text": "暗子默：由于本教程过于简单，所以不加水印。\n打开骑砍文件夹，找到mb_warband这个exe文件，右键然后选择创建快捷方式，\n然后在mb_warband下面会出现一个快捷方式的图标，将其移动到桌面即可。",
       "images": [
         "assets/img/desktop/step1.png",
@@ -384,6 +405,7 @@ const RAW = {
     {
       "slug": "merge",
       "title": "将mod文件与原版合成的方法",
+      "summary": "把 MOD 文件与原版游戏文件合并到同一目录，确保模组能被识别运行。",
       "text": "",
       "images": [
         "assets/img/merge/step1.png",
@@ -400,6 +422,7 @@ const RAW = {
     {
       "slug": "serial",
       "title": "部分骑砍版本如何输入序列码",
+      "summary": "部分版本需要输入序列码激活时，如何填写并处理反复弹出激活框的问题。",
       "text": "暗子默：由于界面变化不大，且操作简单，本次教程不加水印。\n首先，打开骑砍文件夹，找到mount&blade-uniloader，！！！！不是mount&blade！！！!后面有uniloader。\n打开后，（由于魔改了文字，所以开始界面的字体会乱码，但游戏内的游戏文字正常）会弹出一个界面，你选择第二个选项，\n再打开中间最下面的方框，到时候会再次弹出一个窗口，你在其中全部输入A，最后点击右下方，偏左的方框即可。\n【可能】会出现下面问题：\n输完序列码后又弹出需要你输入序列码的方框？\n解决方法：1.忽略，只要输入过一次那就永久使用；\n2.右键mount&blade-uniloader，选择属性，再选择兼容性，打开以兼容模式运行这个程序，\n下方选择为Windows7或8，最后点确定。\n然后重新运转，就可以了。",
       "images": [
         "assets/img/serial/step1.png",
@@ -413,8 +436,34 @@ const RAW = {
       "hasText": true
     },
     {
+      "slug": "activation",
+      "title": "无法正常激活后的解决教程（无双三国 / 订婚舞会）",
+      "summary": "序列码激活始终弹窗，或激活程序被杀毒软件清理时的排查、兼容设置与文件还原方法。",
+      "text": "本教程针对无双三国、订婚舞会等 MOD 在输入序列码后仍无法正常激活的情况，分两种原因处理。\n图例中的乱码为以前版本显示，目前本店所有商品一般不再出现乱码内容；仅无双三国和订婚舞会会出现英文版本的激活内容，按教程内容所在位置对应选项操作即可。建议优先完成激活，若始终弹出激活界面，再观看本教程。\n原因一、始终弹出激活界面：\n第一步，右键游戏文件夹中的 mount&blade-uniloader.exe 文件（注意不是 mount&blade.exe）。\n第二步，在右键菜单中点击“属性”。\n第三步，切换到“兼容性”标签页。\n第四步，勾选“以兼容模式运行这个程序”，选择 Windows 7；再勾选“以管理员身份运行此程序”“注册此程序以重新启动”。\n第五步，点击“确定”保存，然后重新运行程序，按激活步骤输入序列码即可。\n原因二、文件被杀毒清理：\n具体表现为 mount&blade-uniloader.exe 不见了。\n第一步，确认游戏文件夹中该 exe 文件已被删除。\n第二步，打开系统设置 → 隐私和安全性 → Windows 安全中心。\n第三步，点击“病毒和威胁防护”，被清理的项目这里会显示感叹号。\n第四步，进入“已隔离威胁”列表。\n第五步，找到被隔离的游戏程序，在受影响的项目中点击“还原”，把文件恢复回游戏文件夹，再重新运行激活。",
+      "images": [
+        "assets/img/activation/step1.png",
+        "assets/img/activation/step2.png",
+        "assets/img/activation/step3.png",
+        "assets/img/activation/step4.png",
+        "assets/img/activation/step5.png",
+        "assets/img/activation/step6.png",
+        "assets/img/activation/step7.png",
+        "assets/img/activation/step8.png",
+        "assets/img/activation/step9.png",
+        "assets/img/activation/step10.png",
+        "assets/img/activation/step11.png",
+        "assets/img/activation/step12.png",
+        "assets/img/activation/step13.png",
+        "assets/img/activation/step14.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
       "slug": "rgl",
       "title": "弹出RGL ERROR错误怎么办",
+      "summary": "运行游戏弹出 RGL ERROR 着色器报错时，如何在配置里改渲染方式修复。",
       "text": "当运行游戏时出现RGL ERROR 窗口，显示：Failed to assemble shader faceshader_ps from file 时，按以下操作即可。\n首先，打开游戏exe文件，选择配置（界面第二个），将渲染方式改成DirectX 7,把 使用像素着色引擎 前面的勾勾去掉，完成后即可修复。",
       "images": [
         "assets/img/rgl/step1.png",
@@ -428,6 +477,7 @@ const RAW = {
     {
       "slug": "d3dx9",
       "title": "（最新方法）缺少d3dx9_42和xinput1等文件",
+      "summary": "提示缺少 d3dx9_42、xinput1 等运行库文件时，用 DirectX 修复工具检测并修复。",
       "text": "首先在补丁赠送中下载最新版修复软件：(最新版）DirectX Repair修复工具v4.1增强版.exe。然后安装解压，选中文件夹，双击DirectX Repair.exe文件，而后选择检测并修复。最后等待即可。",
       "images": [
         "assets/img/d3dx9/step1.png",
@@ -444,6 +494,7 @@ const RAW = {
     {
       "slug": "memory",
       "title": "如何使用内存释放器",
+      "summary": "游戏卡顿、内存不足时，如何配置内存释放器定时为骑砍释放运行内存。",
       "text": "暗子默：内存释放器，网传相当给力，但是我的电脑是16G内存，\n对内存释放器的要求不大，对这个不太了解，不过加速肯定可以的。\n原理：释放其他软件内存，为骑砍提供更强大的内存支持，对于专心玩骑砍的玩家非常友好的。\n按一下步骤即可使用：\n第一步，打开补丁赠送中的内存释放器这个exe文件，弹出窗口中，先点击优化规则。\n第二步，再优化规则中将  【mb_warband.exe】（不要带进中括号）将中括号内的文字粘贴一下。\n先将蓝条中的内容清除，再粘贴进入上方框框。\n第三步，完成后，点击添加即可再右方方框里出现这个文件名，在点击保存规则方便下次使用。\n第四步，回到基本设置中，设置时间按下面规则设置：\n{\n玩骑砍时非常卡顿，建议隔5分钟释放一次（如果依旧卡的不行可以将时长往前提）。\n玩骑砍时偶尔卡顿，建议隔10分钟释放一次（偶尔是指差不多十分钟卡顿一次）\n玩骑砍时每个三十分钟卡顿一次，建议隔20分钟释放一次。\n玩骑砍时压根不卡，忽略这个应用，你的电脑不适合这个软件。\n}\n第五步，点击保存设置方便下次使用，然后点击立即释放就可以开始玩骑砍啦！",
       "images": [
         "assets/img/memory/step1.png",
@@ -460,6 +511,7 @@ const RAW = {
     {
       "slug": "battlesizer",
       "title": "赠送的千人战场修改器怎么用",
+      "summary": "如何用千人战场修改器调整战场人数上限，实现更多士兵同屏作战。",
       "text": "暗子默：由于暗子默商店里每个商品都自带人数修改器，如果你想要添加到你自己本来就含有的mod里，可以借鉴本套教程。\n操作步骤：\n首先，打开本文件中的赠送补丁文件夹，找到千人战场修改器文件夹并打开，复制BattleSizer这个exe程序文件，\n然后打开你需要使用的骑砍文件夹（一般暗子默商店都会自带千人战场修改器）。\n然后将该exe文件粘贴在骑砍文件夹中（如果不了解具体位置在哪里，可看【图片】教程）。\n其次，打开BattleSizer这个exe程序文件，会弹出一个窗口。\n拖动上矩形下三角的图像可修改人数，修改完成后点击Save and Exit，\n最后会弹出一个修改成功的英文界面，点击确定后修改完成。\n尾言：由于咸鱼暗子默商店出售的商品都会自带千人战场修改器，几乎不需要教程，步骤从简说明。",
       "images": [
         "assets/img/battlesizer/step1.png",
@@ -469,6 +521,68 @@ const RAW = {
         "assets/img/battlesizer/step5.png",
         "assets/img/battlesizer/step6.png",
         "assets/img/battlesizer/step7.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "cheat-normal",
+      "title": "正常版本如何开启作弊模式",
+      "summary": "原版骑砍在配置里勾选作弊模式的方法，分别给出中文版与英文版操作路径。",
+      "text": "打开作弊模式的方法：\n中文版：运行游戏 → 配置 → 打开作弊模式，勾选后点击确定。\n英文版：运行游戏 → Configure → Enable Cheats，勾选后点击确定。\n进入游戏后，即可使用后面《常用作弊码一览》中的秘技。",
+      "images": [
+        "assets/img/cheat-normal/step1.png",
+        "assets/img/cheat-normal/step2.png",
+        "assets/img/cheat-normal/step3.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "cheat-mod",
+      "title": "无双三国、订婚舞会如何开启作弊模式",
+      "summary": "针对 1.011 版本无双三国、订婚舞会的乱码界面，在高级选项里勾选作弊模式的方法。",
+      "text": "本教程适用于无双三国、订婚舞会等 1.011 版本 MOD。\n图例中的乱码内容为以前版本，目前本店所有商品均不出现乱码内容，仅无双三国和订婚舞会会出现英文版本的激活内容；您根据教程内容所在的位置，按照对应选项进行即可。\n第一步，在启动界面点击第二个选项（Configure / 配置）。\n第二步，在弹出的配置窗口中切换到第三个标签页（高级选项）。\n第三步，勾选第二个方框（打开作弊模式）。\n第四步，点击左下角按钮（确定）保存设置。\n第五步，回到启动界面，点击第一个按钮（进入游戏），即可使用作弊码。",
+      "images": [
+        "assets/img/cheat-mod/step1.png",
+        "assets/img/cheat-mod/step2.png",
+        "assets/img/cheat-mod/step3.png",
+        "assets/img/cheat-mod/step4.png",
+        "assets/img/cheat-mod/step5.png"
+      ],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "cheatsheet",
+      "title": "常用作弊码一览",
+      "summary": "开启作弊模式后，在物品栏、属性栏、大地图、部队、战斗等状态下可用的快捷键秘技清单。",
+      "text": "在进游戏前，先在配置里勾选作弊模式，这样在游戏里就可以使用秘技了。\n物品栏状态下（按 I 键调入，或购买物品时窗口）：\nCTRL+X：一次加 1000 元。\n属性栏状态下（按 C 键调入）：\nCTRL+X：一次加 1000 经验值。\nCTRL+W：同时提升所有武器的熟练度。\n其他常用：\nCTRL+INSERT：快速截图，自动保存在我的文档中。\n战斗状态下按 CTRL+H：一次加满血。\n大地图上按住 CTRL+X，点鼠标左键：可瞬间移动到任意地点。\n大地图上按 CTRL+T：地图上显示所有部队。\n大地图上按 CTRL+空格：让时间快速流失。\n部队状态下，选中部队按 CTRL+X：给部队加经验，迅速升级为精锐部队。\n部队状态下，选中俘虏或部队，按住 CTRL 再点鼠标：全部放到城堡里面。\n战斗过程中按 CTRL+F5：将玩家交由电脑控制，进行自动攻击。\n战斗过程中按 CTRL+F3：自己打晕自己。\n战斗过程中按 CTRL+F4：自动打晕敌人。\n战斗过程中按 CTRL+F6：打晕你的盟友。\n战斗过程中按 CTRL+F9：进行慢动作格杀。\n战斗过程中按 CTRL+F11：暂停游戏。\n战斗过程中按 CTRL+J：紧急刹车，例如勒马。\n战斗过程中按 CTRL+V：瞬间找到你的部队。\n战斗过程中按 CTRL+SHIFT+F3：一下打晕自己，有时甚至直接将所有自己人秒杀。\n战斗过程中按 Ctrl+Shift+F4：对敌人全体施加钝击伤害，甚至可以直接干掉敌人（也可能是 Ctrl+Alt+F4）。\n战斗过程中按 Ctrl+Shift+F6：一下打晕盟友，甚至直接把所有盟友瞬间打晕。",
+      "images": [],
+      "video": null,
+      "docs": [],
+      "hasText": true
+    },
+    {
+      "slug": "import-export",
+      "title": "导入导出大法（修改角色属性）",
+      "summary": "通过导出角色、修改角色文档数值、再导入角色来调整属性、技能与武器熟练度。",
+      "text": "导入导出法：先导出角色，在角色文档里修改数值，再导入角色，即可调整属性与技能。\n第一步，进入大地图 → 主角面板（角色）→ 统计 → 导出玩家角色；提示成功导出后退出到桌面。\n第二步，找到角色文档所在的 CharExport 文件夹：无双三国、订婚舞会等老版本，CharExport 生成在游戏目录中；战团骑砍的文件位置一般在 我的文档 \\ Mount&Blade Warband \\ CharExport。\n第三步，在 CharExport 中打开与你游戏名对应的 txt 文档。\n角色文档字段对照表（对照下表修改对应数值即可）：\nname = 人物名称\nxp = 当前经验值\nmoney = 当前持有金币数量\nattribute_points = 未分配的属性点\nskill_points = 未分配的技能点\nweapon_points = 未分配的武器点\nstrength = 力量\nagility = 敏捷\nintelligence = 智力\ncharisma = 魅力\ntrade = 交易\nleadership = 统御\nprisoner_management = 俘虏\nfirst_aid = 治疗\nsurgery = 手术\nwound_treatment = 急救\ninventory_management = 物品管理\nspotting = 视野\npathfinding = 向导\ntactics = 战术\ntracking = 跟踪\ntrainer = 教练\nhorse_archery = 骑射\nriding = 骑术\nathletics = 跑动\nshield = 盾防\nweapon_master = 武器熟练\npower_draw = 强弓\npower_throw = 强掷\npower_strike = 强击\nironflesh = 铁骨\none_handed_weapons = 单手武器熟练\ntwo_handed_weapons = 双手武器熟练\npolearms = 长柄武器熟练\narchery = 弓箭熟练\ncrossbows = 十字弩熟练\nthrowing = 投掷武器熟练\nfirearms = 火器熟练\n第四步，对照上表修改文档中的对应数值并保存。\n第五步，回到游戏 → 主角面板 → 统计 → 导入玩家角色，确认导入即可成功。",
+      "images": [
+        "assets/img/import-export/step1.png",
+        "assets/img/import-export/step2.png",
+        "assets/img/import-export/step3.png",
+        "assets/img/import-export/step4.png",
+        "assets/img/import-export/step5.png",
+        "assets/img/import-export/step6.png",
+        "assets/img/import-export/step7.png",
+        "assets/img/import-export/step8.png",
+        "assets/img/import-export/step9.png",
+        "assets/img/import-export/step10.png",
+        "assets/img/import-export/step11.png"
       ],
       "video": null,
       "docs": [],
@@ -565,6 +679,35 @@ function firstSentence(text){
   return line&&line.length>46?line.slice(0,46)+"…":line;
 }
 
+let searchKeyword="";
+function matchTutorial(t, kw){
+  if(!kw) return true;
+  const hay=(t.title+" "+(t.summary||"")+" "+(t.text||"")).toLowerCase();
+  return hay.includes(kw);
+}
+
+function renderCards(){
+  const kw=searchKeyword.trim().toLowerCase();
+  const filtered=RAW.tutorials.map((t,i)=>({t,i})).filter(x=>matchTutorial(x.t,kw));
+  $("card-grid").innerHTML=filtered.map(({t,i})=>{
+    const tags=[];
+    if(t.hasText)tags.push(`<span class="tag text">${ICON_TEXT}文字</span>`);
+    if(t.images.length>0)tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张图</span>`);
+    else if(t.pendingImages)tags.push(`<span class="tag pending">截图待补充</span>`);
+    const desc=t.summary||firstSentence(t.text);
+    return `<article class="tcard" data-slug="${t.slug}">
+      <div class="num">${String(i+1).padStart(2,"0")}</div>
+      <h3>${esc(t.title)}</h3>
+      <div class="desc">${esc(desc)}</div>
+      <div class="tags">${tags.join("")}</div>
+    </article>`;
+  }).join("");
+  $("empty-tip").style.display=filtered.length?"":"block";
+  document.querySelectorAll(".tcard").forEach(c=>{
+    c.addEventListener("click",()=>{goDetail(c.dataset.slug);});
+  });
+}
+
 function renderHome(){
   const list=RAW.tutorials;
   $("dir-count").textContent=`共 ${list.length} 个问题`;
@@ -574,21 +717,7 @@ function renderHome(){
     `<span class="chip">${ICON_TEXT}文字说明</span>`+
     `<span class="chip">${ICON_IMG}步骤截图 ${list.reduce((n,t)=>n+t.images.length,0)} 张</span>`;
 
-  $("card-grid").innerHTML=list.map((t,i)=>{
-    const tags=[];
-    if(t.hasText)tags.push(`<span class="tag text">${ICON_TEXT}文字</span>`);
-    tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张图</span>`);
-    return `<article class="tcard" data-slug="${t.slug}">
-      <div class="num">${String(i+1).padStart(2,"0")}</div>
-      <h3>${esc(t.title)}</h3>
-      <div class="desc">${esc(firstSentence(t.text))}</div>
-      <div class="tags">${tags.join("")}</div>
-    </article>`;
-  }).join("");
-
-  document.querySelectorAll(".tcard").forEach(c=>{
-    c.addEventListener("click",()=>{goDetail(c.dataset.slug);});
-  });
+  renderCards();
 
   $("patch-grid").innerHTML=Object.values(RAW.patches).map(p=>`
     <div class="pcard">
@@ -599,6 +728,8 @@ function renderHome(){
     </div>`).join("");
 }
 
+$("search-input").addEventListener("input",e=>{searchKeyword=e.target.value;renderCards();});
+
 /* ============ 详情页 ============ */
 function renderDetail(slug){
   const idx=RAW.tutorials.findIndex(t=>t.slug===slug);
@@ -608,7 +739,8 @@ function renderDetail(slug){
   $("d-title").textContent=t.title;
   const tags=[];
   if(t.hasText)tags.push(`<span class="tag text">${ICON_TEXT}文字说明</span>`);
-  tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张截图</span>`);
+  if(t.images.length>0)tags.push(`<span class="tag">${ICON_IMG}${t.images.length} 张截图</span>`);
+  else if(t.pendingImages)tags.push(`<span class="tag pending">截图待补充</span>`);
   $("d-tags").innerHTML=tags.join("");
 
   // 文字
@@ -627,6 +759,13 @@ function renderDetail(slug){
     });
     flush();
     $("d-text").innerHTML=html.join("");
+  }
+  $("d-text-block").querySelectorAll(".pending-note").forEach(n=>n.remove());
+  if(t.pendingImages){
+    const note=document.createElement("div");
+    note.className="pending-note";
+    note.innerHTML=`<b>步骤截图后续补充中</b>：本条目目前以文字说明为准，配图整理完成后会补充到本页。`;
+    $("d-text-block").appendChild(note);
   }
 
   // 补充文档
@@ -683,6 +822,6 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")$("lightbox").classL
 /* ============ 启动 ============ */
 route();
 </script>
-<div id="asset-pool" style="display:none"><img src="assets/img/startup/step1.png" alt="" aria-hidden="true"><img src="assets/img/startup/step2.png" alt="" aria-hidden="true"><img src="assets/img/startup/step3.png" alt="" aria-hidden="true"><img src="assets/img/startup/step4.png" alt="" aria-hidden="true"><img src="assets/img/startup/step5.png" alt="" aria-hidden="true"><img src="assets/img/startup/step6.png" alt="" aria-hidden="true"><img src="assets/img/startup/step7.png" alt="" aria-hidden="true"><img src="assets/img/startup/step8.png" alt="" aria-hidden="true"><img src="assets/img/startup/step9.png" alt="" aria-hidden="true"><img src="assets/img/startup/step10.png" alt="" aria-hidden="true"><img src="assets/img/startup/step11.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step1.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step2.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step3.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step4.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step5.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step1.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step2.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step3.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step1.png" alt="" aria-hidden="true"><img src="assets/img/merge/step2.png" alt="" aria-hidden="true"><img src="assets/img/merge/step3.png" alt="" aria-hidden="true"><img src="assets/img/merge/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step5.png" alt="" aria-hidden="true"><img src="assets/img/merge/step6.png" alt="" aria-hidden="true"><img src="assets/img/serial/step1.png" alt="" aria-hidden="true"><img src="assets/img/serial/step2.png" alt="" aria-hidden="true"><img src="assets/img/serial/step3.png" alt="" aria-hidden="true"><img src="assets/img/serial/step4.png" alt="" aria-hidden="true"><img src="assets/img/serial/step5.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step1.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step2.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step1.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step2.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step4.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step5.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step6.png" alt="" aria-hidden="true"><img src="assets/img/memory/step1.png" alt="" aria-hidden="true"><img src="assets/img/memory/step2.png" alt="" aria-hidden="true"><img src="assets/img/memory/step3.png" alt="" aria-hidden="true"><img src="assets/img/memory/step4.png" alt="" aria-hidden="true"><img src="assets/img/memory/step5.png" alt="" aria-hidden="true"><img src="assets/img/memory/step6.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step1.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step2.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step3.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step4.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step5.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step6.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step7.png" alt="" aria-hidden="true"></div>
+<div id="asset-pool" style="display:none"><img src="assets/img/startup/step1.png" alt="" aria-hidden="true"><img src="assets/img/startup/step2.png" alt="" aria-hidden="true"><img src="assets/img/startup/step3.png" alt="" aria-hidden="true"><img src="assets/img/startup/step4.png" alt="" aria-hidden="true"><img src="assets/img/startup/step5.png" alt="" aria-hidden="true"><img src="assets/img/startup/step6.png" alt="" aria-hidden="true"><img src="assets/img/startup/step7.png" alt="" aria-hidden="true"><img src="assets/img/startup/step8.png" alt="" aria-hidden="true"><img src="assets/img/startup/step9.png" alt="" aria-hidden="true"><img src="assets/img/startup/step10.png" alt="" aria-hidden="true"><img src="assets/img/startup/step11.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step1.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step2.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step3.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step4.png" alt="" aria-hidden="true"><img src="assets/img/chinese/step5.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step1.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step2.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step3.png" alt="" aria-hidden="true"><img src="assets/img/desktop/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step1.png" alt="" aria-hidden="true"><img src="assets/img/merge/step2.png" alt="" aria-hidden="true"><img src="assets/img/merge/step3.png" alt="" aria-hidden="true"><img src="assets/img/merge/step4.png" alt="" aria-hidden="true"><img src="assets/img/merge/step5.png" alt="" aria-hidden="true"><img src="assets/img/merge/step6.png" alt="" aria-hidden="true"><img src="assets/img/serial/step1.png" alt="" aria-hidden="true"><img src="assets/img/serial/step2.png" alt="" aria-hidden="true"><img src="assets/img/serial/step3.png" alt="" aria-hidden="true"><img src="assets/img/serial/step4.png" alt="" aria-hidden="true"><img src="assets/img/serial/step5.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step1.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step2.png" alt="" aria-hidden="true"><img src="assets/img/rgl/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step1.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step2.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step3.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step4.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step5.png" alt="" aria-hidden="true"><img src="assets/img/d3dx9/step6.png" alt="" aria-hidden="true"><img src="assets/img/memory/step1.png" alt="" aria-hidden="true"><img src="assets/img/memory/step2.png" alt="" aria-hidden="true"><img src="assets/img/memory/step3.png" alt="" aria-hidden="true"><img src="assets/img/memory/step4.png" alt="" aria-hidden="true"><img src="assets/img/memory/step5.png" alt="" aria-hidden="true"><img src="assets/img/memory/step6.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step1.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step2.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step3.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step4.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step5.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step6.png" alt="" aria-hidden="true"><img src="assets/img/battlesizer/step7.png" alt="" aria-hidden="true"><img src="assets/img/activation/step1.png" alt="" aria-hidden="true"><img src="assets/img/activation/step2.png" alt="" aria-hidden="true"><img src="assets/img/activation/step3.png" alt="" aria-hidden="true"><img src="assets/img/activation/step4.png" alt="" aria-hidden="true"><img src="assets/img/activation/step5.png" alt="" aria-hidden="true"><img src="assets/img/activation/step6.png" alt="" aria-hidden="true"><img src="assets/img/activation/step7.png" alt="" aria-hidden="true"><img src="assets/img/activation/step8.png" alt="" aria-hidden="true"><img src="assets/img/activation/step9.png" alt="" aria-hidden="true"><img src="assets/img/activation/step10.png" alt="" aria-hidden="true"><img src="assets/img/activation/step11.png" alt="" aria-hidden="true"><img src="assets/img/activation/step12.png" alt="" aria-hidden="true"><img src="assets/img/activation/step13.png" alt="" aria-hidden="true"><img src="assets/img/activation/step14.png" alt="" aria-hidden="true"><img src="assets/img/cheat-normal/step1.png" alt="" aria-hidden="true"><img src="assets/img/cheat-normal/step2.png" alt="" aria-hidden="true"><img src="assets/img/cheat-normal/step3.png" alt="" aria-hidden="true"><img src="assets/img/cheat-mod/step1.png" alt="" aria-hidden="true"><img src="assets/img/cheat-mod/step2.png" alt="" aria-hidden="true"><img src="assets/img/cheat-mod/step3.png" alt="" aria-hidden="true"><img src="assets/img/cheat-mod/step4.png" alt="" aria-hidden="true"><img src="assets/img/cheat-mod/step5.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step1.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step2.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step3.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step4.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step5.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step6.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step7.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step8.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step9.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step10.png" alt="" aria-hidden="true"><img src="assets/img/import-export/step11.png" alt="" aria-hidden="true"></div>
 </body>
 </html>
